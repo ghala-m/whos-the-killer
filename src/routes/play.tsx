@@ -203,9 +203,9 @@ function PlayPage() {
               {clueIndex === 0 ? (
                 <p className="mt-10 text-xl text-muted-foreground">No clues yet. Reveal the first one.</p>
               ) : (
-                <article key={c.clues[clueIndex - 1].id} className="anim-slam paper mx-auto max-w-3xl rounded-sm p-6">
+                <article key={c.clues[clueIndex - 1]?.id} className="anim-slam paper mx-auto max-w-3xl rounded-sm p-6">
                   <p className="text-xs uppercase tracking-[0.4em]">Clue {clueIndex}</p>
-                  <p className="mt-3 font-display text-2xl leading-snug">{c.clues[clueIndex - 1].text}</p>
+                  <p className="mt-3 font-display text-2xl leading-snug">{c.clues[clueIndex - 1]?.text}</p>
                 </article>
               )}
             </div>
@@ -222,7 +222,7 @@ function PlayPage() {
                   onClick={() => {
                     sfx.slam();
                     const nextClue = c.clues[clueIndex];
-                    if (nextClue.eliminates.length) window.setTimeout(() => sfx.eliminate(), 350);
+                    if (nextClue?.eliminates.length) window.setTimeout(() => sfx.eliminate(), 350);
                     setClueIndex((i) => i + 1);
                   }}
                 >

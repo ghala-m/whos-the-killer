@@ -87,8 +87,11 @@ function SetupPage() {
   const moveClue = (index: number, dir: -1 | 1) => {
     const next = [...c.clues];
     const target = index + dir;
-    if (target < 0 || target >= next.length) return;
-    [next[index], next[target]] = [next[target], next[index]];
+    const a = next[index];
+    const b = next[target];
+    if (!a || !b) return;
+    next[index] = b;
+    next[target] = a;
     update({ clues: next });
   };
 
@@ -123,7 +126,7 @@ function SetupPage() {
         setMessage("Could not read that file — is it valid JSON?");
       }
     };
-    reader.readAsDataURL ? reader.readAsText(file) : reader.readAsText(file);
+    reader.readAsText(file);
   };
 
   return (
