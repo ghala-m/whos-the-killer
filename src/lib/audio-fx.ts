@@ -20,7 +20,7 @@ export function initAudio() {
 
 export function setMuted(next: boolean) {
   muted = next;
-  if (master && ctx) master.gain.setTargetAtTime(next ? 0 : 0.5, ctx.now?.() ?? ctx.currentTime, 0.05);
+  if (master && ctx) master.gain.setTargetAtTime(next ? 0 : 0.5, ctx.currentTime, 0.05);
 }
 
 export function isMuted() {
