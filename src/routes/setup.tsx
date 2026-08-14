@@ -13,6 +13,8 @@ import {
   type Gender,
   type Suspect,
 } from "@/lib/case-model";
+import { useUi } from "@/lib/ui-prefs";
+import { PrefToggles } from "@/components/PrefToggles";
 
 export const Route = createFileRoute("/setup")({
   head: () => ({
@@ -20,10 +22,14 @@ export const Route = createFileRoute("/setup")({
       { title: "Case Setup — Case Closed" },
       {
         name: "description",
-        content: "Build your mystery: choose the victim, add suspects from your teaching staff, write clues, and pick the culprit.",
+        content:
+          "Build your mystery: choose the victim, add suspects, write clues, pick the culprit and set up the competing teams.",
       },
       { property: "og:title", content: "Case Setup — Case Closed" },
-      { property: "og:description", content: "Configure victim, suspects, clues, culprit and countdown for your classroom mystery." },
+      {
+        property: "og:description",
+        content: "Configure victim, suspects, clues, culprit, teams and countdown for your classroom mystery.",
+      },
     ],
   }),
   component: SetupPage,
@@ -46,6 +52,7 @@ const inputClass =
 
 function SetupPage() {
   const router = useRouter();
+  const { t, lang } = useUi();
   const [c, setC] = useState<CaseFile | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -58,7 +65,7 @@ function SetupPage() {
     if (c) saveCase(c);
   }, [c]);
 
-  if (!c) return <main className="min-h-screen p-10 text-muted-foreground">Opening case file…</main>;
+  if (!c) return <main className="min-h-screen p-10 text-muted-foreground">…</main>;
 
   const update = (patch: Partial<CaseFile>) => setC({ ...c, ...patch });
   const issues = caseIssues(c);
@@ -95,6 +102,12 @@ function SetupPage() {
     update({ clues: next });
   };
 
+  const setTeamCount = (n: number) => {
+    const count = Math.min(10, Math.max(1, n || 1));
+    const teams = Array.from({ length: count }, (_, i) => c.settings.teams[i] ?? `${lang === "ar" ? "فريق" : "Team"} ${i + 1}`);
+    update({ settings: { ...c.settings, teams } });
+  };
+
   const uploadAvatar = (file: File, apply: (dataUrl: string) => void) => {
     const reader = new FileReader();
     reader.onload = () => apply(String(reader.result));
@@ -117,13 +130,13 @@ function SetupPage() {
       try {
         const parsed = validateCase(JSON.parse(String(reader.result)));
         if (!parsed) {
-          setMessage("That file isn't a valid case file.");
+          setMessage(t("invalidFile"));
           return;
         }
         setC(parsed);
-        setMessage("Case imported.");
+        setMessage(t("imported"));
       } catch {
-        setMessage("Could not read that file — is it valid JSON?");
+        setMessage(t("badJson"));
       }
     };
     reader.readAsText(file);
@@ -133,21 +146,22 @@ function SetupPage() {
     <main className="mx-auto max-w-5xl px-5 py-10">
       <header className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5">
         <div>
-          <p className="text-xs uppercase tracking-[0.4em] text-primary">Detective's desk</p>
-          <h1 className="mt-1 text-4xl">Case Setup</h1>
+          <p className="text-xs uppercase tracking-[0.4em] text-primary">{t("desk")}</p>
+          <h1 className="mt-1 text-4xl">{t("setupTitle")}</h1>
         </div>
         <div className="flex flex-wrap gap-2 text-xs uppercase tracking-widest">
+          <PrefToggles />
           <button onClick={() => setC(SAMPLE_CASE)} className="rounded-sm border border-border px-3 py-2 hover:bg-secondary">
-            Sample case
+            {t("sampleCase")}
           </button>
           <button onClick={() => setC(emptyCase())} className="rounded-sm border border-border px-3 py-2 hover:bg-secondary">
-            Reset
+            {t("reset")}
           </button>
           <button onClick={exportCase} className="rounded-sm border border-border px-3 py-2 hover:bg-secondary">
-            Export
+            {t("export")}
           </button>
           <button onClick={() => fileRef.current?.click()} className="rounded-sm border border-border px-3 py-2 hover:bg-secondary">
-            Import
+            {t("import")}
           </button>
           <input
             ref={fileRef}
@@ -167,16 +181,16 @@ function SetupPage() {
 
       {/* Victim */}
       <section className="mt-8 rounded-lg border border-border bg-card p-5">
-        <h2 className="text-2xl">The Victim</h2>
+        <h2 className="text-2xl">{t("victim")}</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-3">
-          <Field label="Name">
+          <Field label={t("name")}>
             <input
               className={inputClass}
               value={c.victim.name}
               onChange={(e) => update({ victim: { ...c.victim, name: e.target.value } })}
             />
           </Field>
-          <Field label="Preset">
+          <Field label={t("preset")}>
             <select
               className={inputClass}
               value={c.victim.preset}
@@ -191,20 +205,20 @@ function SetupPage() {
                 });
               }}
             >
-              <option value="duck">Rubber Duck</option>
-              <option value="tux">Tux the Penguin</option>
-              <option value="custom">Custom</option>
+              <option value="duck">{t("rubberDuck")}</option>
+              <option value="tux">{t("tux")}</option>
+              <option value="custom">{t("custom")}</option>
             </select>
           </Field>
-          <Field label="Avatar (emoji or image)">
+          <Field label={t("avatar")}>
             <div className="flex items-center gap-2">
               <input
                 className={inputClass}
-                value={c.victim.avatar.startsWith("data:") ? "(uploaded image)" : c.victim.avatar}
+                value={c.victim.avatar.startsWith("data:") ? "(image)" : c.victim.avatar}
                 onChange={(e) => update({ victim: { ...c.victim, avatar: e.target.value, preset: "custom" } })}
               />
               <label className="cursor-pointer rounded-sm border border-border px-3 py-2 text-xs uppercase hover:bg-secondary">
-                Upload
+                {t("upload")}
                 <input
                   type="file"
                   accept="image/*"
@@ -223,16 +237,18 @@ function SetupPage() {
       {/* Suspects */}
       <section className="mt-6 rounded-lg border border-border bg-card p-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl">Suspects ({c.suspects.length})</h2>
+          <h2 className="text-2xl">
+            {t("suspectsTitle")} ({c.suspects.length})
+          </h2>
           <button onClick={addSuspect} className="rounded-sm bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
-            + Add suspect
+            {t("addSuspect")}
           </button>
         </div>
         <ul className="mt-4 space-y-3">
           {c.suspects.map((s) => (
             <li key={s.id} className="rounded-sm border border-border bg-secondary/40 p-4">
               <div className="grid gap-3 sm:grid-cols-[auto_1fr_1fr_1fr_auto] sm:items-end">
-                <Field label="Avatar">
+                <Field label={t("avatar")}>
                   <select
                     className={inputClass}
                     value={s.avatar.startsWith("data:") ? "" : s.avatar}
@@ -246,10 +262,10 @@ function SetupPage() {
                     ))}
                   </select>
                 </Field>
-                <Field label="Name">
+                <Field label={t("name")}>
                   <input className={inputClass} value={s.name} onChange={(e) => patchSuspect(s.id, { name: e.target.value })} />
                 </Field>
-                <Field label="Role">
+                <Field label={t("role")}>
                   <input
                     className={inputClass}
                     list="role-presets"
@@ -257,20 +273,20 @@ function SetupPage() {
                     onChange={(e) => patchSuspect(s.id, { role: e.target.value })}
                   />
                 </Field>
-                <Field label="Gender">
+                <Field label={t("gender")}>
                   <select
                     className={inputClass}
                     value={s.gender}
                     onChange={(e) => patchSuspect(s.id, { gender: e.target.value as Gender })}
                   >
-                    <option value="unspecified">Unspecified</option>
-                    <option value="female">Female</option>
-                    <option value="male">Male</option>
+                    <option value="unspecified">{t("unspecified")}</option>
+                    <option value="female">{t("female")}</option>
+                    <option value="male">{t("male")}</option>
                   </select>
                 </Field>
                 <div className="flex gap-2">
                   <label className="cursor-pointer rounded-sm border border-border px-3 py-2 text-xs uppercase hover:bg-secondary">
-                    Img
+                    {t("img")}
                     <input
                       type="file"
                       accept="image/*"
@@ -285,7 +301,7 @@ function SetupPage() {
                     onClick={() => removeSuspect(s.id)}
                     className="rounded-sm border border-destructive/60 px-3 py-2 text-xs uppercase text-destructive hover:bg-destructive/15"
                   >
-                    Del
+                    {t("del")}
                   </button>
                 </div>
               </div>
@@ -297,7 +313,7 @@ function SetupPage() {
                   onChange={() => update({ killerId: s.id })}
                   className="size-4 accent-[oklch(0.72_0.15_68)]"
                 />
-                <span className="uppercase tracking-widest">Culprit</span>
+                <span className="uppercase tracking-widest">{t("culprit")}</span>
               </label>
             </li>
           ))}
@@ -312,9 +328,11 @@ function SetupPage() {
       {/* Clues */}
       <section className="mt-6 rounded-lg border border-border bg-card p-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl">Clues ({c.clues.length})</h2>
+          <h2 className="text-2xl">
+            {t("cluesTitle")} ({c.clues.length})
+          </h2>
           <button onClick={addClue} className="rounded-sm bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
-            + Add clue
+            {t("addClue")}
           </button>
         </div>
         <ol className="mt-4 space-y-3">
@@ -324,7 +342,7 @@ function SetupPage() {
                 <span className="font-display text-lg text-brass">{i + 1}</span>
                 <textarea
                   className={`${inputClass} min-h-20`}
-                  placeholder="The culprit was seen…"
+                  placeholder={t("cluePlaceholder")}
                   value={cl.text}
                   onChange={(e) => patchClue(cl.id, { text: e.target.value })}
                 />
@@ -344,7 +362,7 @@ function SetupPage() {
                 </div>
               </div>
               <fieldset className="mt-3">
-                <legend className="text-xs uppercase tracking-widest text-muted-foreground">Eliminates</legend>
+                <legend className="text-xs uppercase tracking-widest text-muted-foreground">{t("eliminates")}</legend>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {c.suspects.map((s) => {
                     const on = cl.eliminates.includes(s.id);
@@ -352,7 +370,7 @@ function SetupPage() {
                       <label
                         key={s.id}
                         className={`cursor-pointer rounded-full border px-3 py-1 text-sm ${
-                          on ? "border-destructive bg-destructive/20 text-destructive-foreground" : "border-border"
+                          on ? "border-destructive bg-destructive/20 text-foreground" : "border-border"
                         }`}
                       >
                         <input
@@ -365,7 +383,7 @@ function SetupPage() {
                             })
                           }
                         />
-                        {s.avatar.startsWith("data:") ? "🖼" : s.avatar} {s.name || "Unnamed"}
+                        {s.avatar.startsWith("data:") ? "🖼" : s.avatar} {s.name || "—"}
                       </label>
                     );
                   })}
@@ -376,18 +394,55 @@ function SetupPage() {
         </ol>
       </section>
 
-      {/* Settings + start */}
+      {/* Teams */}
       <section className="mt-6 rounded-lg border border-border bg-card p-5">
-        <h2 className="text-2xl">Final Countdown</h2>
+        <h2 className="text-2xl">{t("teamsTitle")}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">{t("teamsHint")}</p>
         <div className="mt-4 max-w-xs">
-          <Field label="Duration (seconds)">
+          <Field label={t("teamCount")}>
+            <input
+              type="number"
+              min={1}
+              max={10}
+              className={inputClass}
+              value={c.settings.teams.length}
+              onChange={(e) => setTeamCount(Number(e.target.value))}
+            />
+          </Field>
+        </div>
+        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+          {c.settings.teams.map((name, i) => (
+            <li key={i}>
+              <Field label={`${t("teamName")} ${i + 1}`}>
+                <input
+                  className={inputClass}
+                  value={name}
+                  onChange={(e) => {
+                    const teams = [...c.settings.teams];
+                    teams[i] = e.target.value;
+                    update({ settings: { ...c.settings, teams } });
+                  }}
+                />
+              </Field>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Countdown */}
+      <section className="mt-6 rounded-lg border border-border bg-card p-5">
+        <h2 className="text-2xl">{t("countdownTitle")}</h2>
+        <div className="mt-4 max-w-xs">
+          <Field label={t("duration")}>
             <input
               type="number"
               min={5}
               max={600}
               className={inputClass}
               value={c.settings.countdownSeconds}
-              onChange={(e) => update({ settings: { countdownSeconds: Math.max(5, Number(e.target.value) || 60) } })}
+              onChange={(e) =>
+                update({ settings: { ...c.settings, countdownSeconds: Math.max(5, Number(e.target.value) || 60) } })
+              }
             />
           </Field>
         </div>
@@ -402,18 +457,18 @@ function SetupPage() {
           }}
           className="rounded-sm bg-primary px-6 py-3 font-display text-lg text-primary-foreground disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Save &amp; Start
+          {t("saveStart")}
         </button>
         <Link to="/" className="rounded-sm border border-border px-6 py-3 font-display text-lg hover:bg-secondary">
-          Main menu
+          {t("mainMenu")}
         </Link>
         <ul className="text-sm">
           {issues.map((i) => (
             <li key={i.message} className={i.level === "error" ? "text-destructive" : "text-brass"}>
-              {i.level === "error" ? "✕" : "!"} {i.message}
+              {i.level === "error" ? "!" : "•"} {i.message}
             </li>
           ))}
-          {issues.length === 0 && <li className="text-primary">Case is airtight. Ready to play.</li>}
+          {issues.length === 0 && <li className="text-primary">{t("airtight")}</li>}
         </ul>
       </div>
     </main>

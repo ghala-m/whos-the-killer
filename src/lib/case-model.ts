@@ -25,7 +25,7 @@ export interface CaseFile {
   suspects: Suspect[];
   clues: Clue[];
   killerId: string | null;
-  settings: { countdownSeconds: number };
+  settings: { countdownSeconds: number; teams: string[] };
 }
 
 export const STORAGE_KEY = "case-closed:case";
@@ -48,7 +48,7 @@ export const SAMPLE_CASE: CaseFile = {
     { id: "c4", text: "The rubber duck's final squeak was recorded. The voice on the tape was unmistakably not Sam's.", eliminates: ["s5"] },
   ],
   killerId: "s2",
-  settings: { countdownSeconds: 60 },
+  settings: { countdownSeconds: 60, teams: ["Team 1", "Team 2", "Team 3"] },
 };
 
 export function emptyCase(): CaseFile {
@@ -57,7 +57,7 @@ export function emptyCase(): CaseFile {
     suspects: [],
     clues: [],
     killerId: null,
-    settings: { countdownSeconds: 60 },
+    settings: { countdownSeconds: 60, teams: ["Team 1", "Team 2"] },
   };
 }
 
@@ -74,7 +74,13 @@ export function validateCase(c: unknown): CaseFile | null {
       suspects: k.suspects,
       clues: k.clues,
       killerId: k.killerId ?? null,
-      settings: { countdownSeconds: Number(k.settings?.countdownSeconds) || 60 },
+      settings: {
+        countdownSeconds: Number(k.settings?.countdownSeconds) || 60,
+        teams:
+          Array.isArray(k.settings?.teams) && k.settings.teams.length > 0
+            ? k.settings.teams.map((t) => String(t))
+            : ["Team 1", "Team 2"],
+      },
     };
   } catch {
     return null;
@@ -121,5 +127,7 @@ export function caseIssues(c: CaseFile): CaseIssue[] {
       message: `${survivors.length} suspects survive every clue — the room will have to guess between them.`,
     });
   if (c.suspects.some((s) => !s.name.trim())) issues.push({ level: "warning", message: "Some suspects have no name." });
+  if (!c.settings.teams || c.settings.teams.length < 1)
+    issues.push({ level: "error", message: "Add at least one competing team." });
   return issues;
 }
