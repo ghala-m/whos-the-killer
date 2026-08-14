@@ -70,6 +70,38 @@
   --evidence: oklch(0.55 0.21 25);
 }
 
+html.light {
+  --background: oklch(0.95 0.02 85);
+  --foreground: oklch(0.2 0.03 60);
+  --card: oklch(0.99 0.01 85);
+  --card-foreground: oklch(0.2 0.03 60);
+  --popover: oklch(0.99 0.01 85);
+  --popover-foreground: oklch(0.2 0.03 60);
+  --primary: oklch(0.52 0.16 45);
+  --primary-foreground: oklch(0.98 0.01 85);
+  --secondary: oklch(0.9 0.02 80);
+  --secondary-foreground: oklch(0.22 0.03 60);
+  --muted: oklch(0.9 0.02 80);
+  --muted-foreground: oklch(0.42 0.03 70);
+  --accent: oklch(0.55 0.19 25);
+  --accent-foreground: oklch(0.98 0.01 85);
+  --destructive: oklch(0.5 0.2 25);
+  --destructive-foreground: oklch(0.98 0.01 85);
+  --border: oklch(0.78 0.03 75);
+  --input: oklch(0.86 0.02 80);
+  --ring: oklch(0.52 0.16 45);
+  --cork: oklch(0.68 0.08 65);
+  --cork-foreground: oklch(0.2 0.03 60);
+  --brass: oklch(0.52 0.12 70);
+  --evidence: oklch(0.5 0.2 25);
+}
+
+html.light body {
+  background-image:
+    radial-gradient(ellipse at top, oklch(0.88 0.04 80 / 0.9), transparent 60%),
+    repeating-linear-gradient(45deg, oklch(0 0 0 / 0.015) 0 2px, transparent 2px 4px);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
@@ -176,6 +208,70 @@
   50% {
     background-color: oklch(0.32 0.13 25);
   }
+}
+
+/* ---------- stamps (no X marks on suspects) ---------- */
+
+@utility stamp-cleared {
+  display: block;
+  transform: rotate(-9deg);
+  border: 3px solid oklch(0.45 0.12 150 / 0.75);
+  color: oklch(0.38 0.12 150 / 0.9);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.1rem 0;
+  background: oklch(1 0 0 / 0.35);
+}
+
+@utility stamp-accused {
+  display: block;
+  transform: rotate(7deg);
+  border: 3px solid oklch(0.55 0.21 25 / 0.8);
+  color: oklch(0.48 0.21 25 / 0.95);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.1rem 0;
+  background: oklch(1 0 0 / 0.35);
+}
+
+@keyframes verdict-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-12deg);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.15) rotate(3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@utility anim-verdict {
+  animation: verdict-pop 0.6s cubic-bezier(0.2, 1.5, 0.3, 1) both;
+}
+
+@keyframes wrong-buzz {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-10px) rotate(-3deg);
+  }
+  75% {
+    transform: translateX(10px) rotate(3deg);
+  }
+}
+
+@utility anim-buzz {
+  animation: wrong-buzz 0.4s linear 3;
 }
 
 @keyframes confetti-fall {
