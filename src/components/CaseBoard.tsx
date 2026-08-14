@@ -4,11 +4,11 @@ import { useUi } from "@/lib/ui-prefs";
 interface Props {
   suspects: Suspect[];
   eliminated: Set<string>;
-  revealedCount?: number; // how many suspects have entered (phase 1 stagger)
-  highlightId?: string | null;
-  accused?: Set<string>; // suspects already wrongly accused by a team
-  onPick?: (id: string) => void;
-  pickable?: boolean;
+  revealedCount?: number | undefined; // how many suspects have entered (phase 1 stagger)
+  highlightId?: string | null | undefined;
+  accused?: Set<string> | undefined; // suspects already wrongly accused by a team
+  onPick?: ((id: string) => void) | undefined;
+  pickable?: boolean | undefined;
 }
 
 export function SuspectCard({
@@ -23,10 +23,10 @@ export function SuspectCard({
   suspect: Suspect;
   eliminated: boolean;
   index: number;
-  highlighted?: boolean;
-  accused?: boolean;
-  onPick?: (id: string) => void;
-  pickable?: boolean;
+  highlighted?: boolean | undefined;
+  accused?: boolean | undefined;
+  onPick?: ((id: string) => void) | undefined;
+  pickable?: boolean | undefined;
 }) {
   const { t } = useUi();
   const isImage = suspect.avatar.startsWith("data:");
