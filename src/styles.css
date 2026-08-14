@@ -96,6 +96,18 @@ html.light {
   --evidence: oklch(0.5 0.2 25);
 }
 
+html[dir="rtl"] body,
+html[dir="rtl"] h1,
+html[dir="rtl"] h2,
+html[dir="rtl"] h3,
+html[dir="rtl"] .font-display {
+  font-family: "Cairo", "Special Elite", system-ui, sans-serif;
+}
+
+html[dir="rtl"] {
+  letter-spacing: 0 !important;
+}
+
 html.light body {
   background-image:
     radial-gradient(ellipse at top, oklch(0.88 0.04 80 / 0.9), transparent 60%),
