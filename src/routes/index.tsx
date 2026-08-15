@@ -39,8 +39,16 @@ function MainMenu() {
   const blocking = issues.filter((i) => i.level === "error");
   const ready = !!caseFile && blocking.length === 0;
 
+  const scraps = caseFile
+    ? [
+        { n: caseFile.suspects.length, label: t("suspects"), rot: -7, cls: "lg:absolute lg:-left-24 lg:top-8" },
+        { n: caseFile.clues.length, label: t("clues"), rot: 5, cls: "lg:absolute lg:-right-24 lg:top-40" },
+        { n: caseFile.settings.teams.length, label: t("teams"), rot: -4, cls: "lg:absolute lg:-left-20 lg:bottom-4" },
+      ]
+    : [];
+
   return (
-    <main className="spotlight relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-14">
+    <main className="corkboard spotlight relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-16">
       {/* ambient noir layers */}
       <div
         aria-hidden="true"
@@ -53,105 +61,146 @@ function MainMenu() {
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
-        style={{ background: "radial-gradient(ellipse at 50% 120%, oklch(0 0 0 / 0.75), transparent 65%)" }}
+        style={{ background: "radial-gradient(ellipse at 50% 120%, oklch(0 0 0 / 0.8), transparent 65%)" }}
       />
 
       <div className="fixed top-4 end-4 z-20">
         <PrefToggles />
       </div>
 
-      {/* case folder */}
-      <section className="relative z-10 w-full max-w-3xl">
-        <div className="mx-auto w-fit -mb-px rounded-t-md border border-b-0 border-brass/40 bg-brass/15 px-6 py-1.5 font-display text-[0.7rem] uppercase tracking-[0.45em] text-brass">
-          {t("caseNo")}
+      {/* scattered case file */}
+      <section className="relative z-10 w-full max-w-4xl">
+        {/* stray scraps */}
+        <div className="pointer-events-none relative z-20 mb-6 flex flex-wrap items-center justify-center gap-4 lg:absolute lg:inset-0 lg:mb-0 lg:block">
+          {scraps.map((s) => (
+            <div
+              key={String(s.label)}
+              className={`paper anim-drop w-24 rounded-[2px] px-3 py-2 text-center ${s.cls}`}
+              style={{ transform: `rotate(${s.rot}deg)` }}
+            >
+              <div className="font-display text-2xl tabular-nums">{s.n}</div>
+              <div className="text-[0.6rem] uppercase tracking-[0.18em] opacity-70">{s.label}</div>
+            </div>
+          ))}
+
+          <div
+            className="paper anim-drop hidden w-40 rounded-[2px] p-2 lg:absolute lg:-right-28 lg:-bottom-8 lg:block"
+            style={{ transform: "rotate(7deg)" }}
+          >
+            <div className="flex h-24 items-center justify-center bg-ink/85 text-4xl">
+              {caseFile?.victim.avatar?.startsWith("data:") ? "🦆" : caseFile?.victim.avatar ?? "❓"}
+            </div>
+            <div className="pt-2 text-center font-display text-[0.65rem] uppercase tracking-[0.2em]">
+              {caseFile?.victim.name}
+            </div>
+          </div>
         </div>
 
-        <div className="rounded-md border border-brass/30 bg-card/70 p-8 text-center shadow-noir backdrop-blur-sm sm:p-12">
-          <div className="mx-auto mb-6 flex items-center justify-center gap-3 text-brass/60">
-            <span className="h-px w-16 bg-current" />
-            <span className="font-display text-xs uppercase tracking-[0.35em]">🔍</span>
-            <span className="h-px w-16 bg-current" />
+        {/* the folder */}
+        <div className="relative z-10" style={{ transform: "rotate(-1.2deg)" }}>
+          {/* stacked pages behind */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 rounded-md border border-brass/20 bg-card/50"
+            style={{ transform: "rotate(2.4deg)" }}
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 rounded-md border border-brass/20 bg-card/60"
+            style={{ transform: "rotate(-2deg)" }}
+          />
+
+          <div className="relative mx-auto w-fit -mb-px rounded-t-md border border-b-0 border-brass/40 bg-brass/15 px-6 py-1.5 font-display text-[0.7rem] uppercase tracking-[0.45em] text-brass">
+            {t("caseNo")}
           </div>
 
-          <h1 className="anim-flicker text-5xl leading-[0.95] sm:text-7xl">{t("brand")}</h1>
+          <div className="relative rounded-md border border-brass/30 bg-card/85 p-8 text-center shadow-noir backdrop-blur-sm sm:p-12">
+            {/* tape strips */}
+            <span
+              aria-hidden="true"
+              className="absolute -top-3 left-8 h-6 w-24 bg-foreground/10 shadow-sm"
+              style={{ transform: "rotate(-6deg)" }}
+            />
+            <span
+              aria-hidden="true"
+              className="absolute -bottom-3 right-10 h-6 w-20 bg-foreground/10 shadow-sm"
+              style={{ transform: "rotate(4deg)" }}
+            />
 
-          <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">{t("tagline")}</p>
+            <div className="mx-auto mb-6 flex items-center justify-center gap-3 text-brass/60">
+              <span className="h-px w-16 bg-current" />
+              <span className="font-display text-xs uppercase tracking-[0.35em]">🔍</span>
+              <span className="h-px w-16 bg-current" />
+            </div>
 
-          {caseFile && (
-            <dl className="mx-auto mt-8 grid max-w-lg grid-cols-3 gap-3 border-y border-border/60 py-4">
-              {[
-                [caseFile.suspects.length, t("suspects")],
-                [caseFile.clues.length, t("clues")],
-                [caseFile.settings.teams.length, t("teams")],
-              ].map(([n, label]) => (
-                <div key={String(label)}>
-                  <dt className="font-display text-3xl text-brass tabular-nums">{n}</dt>
-                  <dd className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{label}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
+            <h1 className="anim-flicker text-5xl leading-[0.95] sm:text-7xl">{t("brand")}</h1>
 
-          {caseFile && (
-            <p className="mt-4 font-display text-sm uppercase tracking-[0.2em] text-muted-foreground">
-              {t("currentCase")}:{" "}
-              <span className="text-foreground">
-                {caseFile.victim.avatar.startsWith("data:") ? "🦆" : caseFile.victim.avatar} {caseFile.victim.name}
-              </span>
-            </p>
-          )}
+            <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">{t("tagline")}</p>
 
-          {blocking.length > 0 && (
-            <ul className="mt-5 space-y-1 text-sm text-destructive">
-              {blocking.map((i) => (
-                <li key={i.message}>{i.message}</li>
-              ))}
-            </ul>
-          )}
+            {caseFile && (
+              <p className="mt-6 font-display text-sm uppercase tracking-[0.2em] text-muted-foreground">
+                {t("currentCase")}:{" "}
+                <span className="text-foreground">
+                  {caseFile.victim.avatar.startsWith("data:") ? "🦆" : caseFile.victim.avatar} {caseFile.victim.name}
+                </span>
+              </p>
+            )}
 
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
-            <button
-              disabled={!ready}
-              onClick={() => {
-                initAudio();
-                sfx.sting();
-                router.navigate({ to: "/play" });
-              }}
-              className="rounded-sm bg-primary px-10 py-4 font-display text-xl uppercase tracking-[0.15em] text-primary-foreground shadow-noir transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {t("start")}
-            </button>
-            <Link
-              to="/setup"
-              className="rounded-sm border border-border bg-secondary/40 px-10 py-4 font-display text-xl uppercase tracking-[0.15em] transition-colors hover:bg-secondary"
-            >
-              {t("setup")}
-            </Link>
-          </div>
+            {blocking.length > 0 && (
+              <ul className="mt-5 space-y-1 text-sm text-destructive">
+                {blocking.map((i) => (
+                  <li key={i.message}>{i.message}</li>
+                ))}
+              </ul>
+            )}
 
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-3 text-xs">
-            <button
-              onClick={() => {
-                saveCase(SAMPLE_CASE);
-                setCaseFile(SAMPLE_CASE);
-              }}
-              className="rounded-full border border-border/70 px-4 py-2 uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:border-brass hover:text-brass"
-            >
-              {t("loadSample")}
-            </button>
-            <button
-              onClick={() => {
-                const next = !muted;
-                setMuted(next);
-                setMutedState(next);
-              }}
-              className="rounded-full border border-border/70 px-4 py-2 uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:border-brass hover:text-brass"
-            >
-              {t("sound")}: {muted ? t("off") : t("on")}
-            </button>
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
+              <button
+                disabled={!ready}
+                onClick={() => {
+                  initAudio();
+                  sfx.sting();
+                  router.navigate({ to: "/play" });
+                }}
+                className="rounded-sm bg-primary px-10 py-4 font-display text-xl uppercase tracking-[0.15em] text-primary-foreground shadow-noir transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
+                style={{ transform: "rotate(-0.8deg)" }}
+              >
+                {t("start")}
+              </button>
+              <Link
+                to="/setup"
+                className="rounded-sm border border-border bg-secondary/40 px-10 py-4 font-display text-xl uppercase tracking-[0.15em] transition-colors hover:bg-secondary"
+                style={{ transform: "rotate(1deg)" }}
+              >
+                {t("setup")}
+              </Link>
+            </div>
+
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-3 text-xs">
+              <button
+                onClick={() => {
+                  saveCase(SAMPLE_CASE);
+                  setCaseFile(SAMPLE_CASE);
+                }}
+                className="rounded-full border border-border/70 px-4 py-2 uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:border-brass hover:text-brass"
+              >
+                {t("loadSample")}
+              </button>
+              <button
+                onClick={() => {
+                  const next = !muted;
+                  setMuted(next);
+                  setMutedState(next);
+                }}
+                className="rounded-full border border-border/70 px-4 py-2 uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:border-brass hover:text-brass"
+              >
+                {t("sound")}: {muted ? t("off") : t("on")}
+              </button>
+            </div>
           </div>
         </div>
       </section>
     </main>
   );
 }
+
