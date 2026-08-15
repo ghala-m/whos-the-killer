@@ -41,9 +41,9 @@ function MainMenu() {
 
   const scraps = caseFile
     ? [
-        { n: caseFile.suspects.length, label: t("suspects"), rot: -7, cls: "lg:absolute lg:-left-6 lg:top-10" },
-        { n: caseFile.clues.length, label: t("clues"), rot: 5, cls: "lg:absolute lg:-right-10 lg:top-24" },
-        { n: caseFile.settings.teams.length, label: t("teams"), rot: -4, cls: "lg:absolute lg:-left-2 lg:bottom-6" },
+        { n: caseFile.suspects.length, label: t("suspects"), rot: -7, cls: "lg:absolute lg:-left-24 lg:top-8" },
+        { n: caseFile.clues.length, label: t("clues"), rot: 5, cls: "lg:absolute lg:-right-24 lg:top-40" },
+        { n: caseFile.settings.teams.length, label: t("teams"), rot: -4, cls: "lg:absolute lg:-left-20 lg:bottom-4" },
       ]
     : [];
 
@@ -71,7 +71,7 @@ function MainMenu() {
       {/* scattered case file */}
       <section className="relative z-10 w-full max-w-4xl">
         {/* stray scraps */}
-        <div className="pointer-events-none relative mb-6 flex flex-wrap items-center justify-center gap-4 lg:mb-0 lg:block">
+        <div className="pointer-events-none relative z-20 mb-6 flex flex-wrap items-center justify-center gap-4 lg:absolute lg:inset-0 lg:mb-0 lg:block">
           {scraps.map((s) => (
             <div
               key={String(s.label)}
@@ -84,7 +84,7 @@ function MainMenu() {
           ))}
 
           <div
-            className="paper anim-drop hidden w-40 rounded-[2px] p-2 lg:absolute lg:-right-16 lg:bottom-2 lg:block"
+            className="paper anim-drop hidden w-40 rounded-[2px] p-2 lg:absolute lg:-right-28 lg:-bottom-8 lg:block"
             style={{ transform: "rotate(7deg)" }}
           >
             <div className="flex h-24 items-center justify-center bg-ink/85 text-4xl">
@@ -97,7 +97,7 @@ function MainMenu() {
         </div>
 
         {/* the folder */}
-        <div className="relative" style={{ transform: "rotate(-1.2deg)" }}>
+        <div className="relative z-10" style={{ transform: "rotate(-1.2deg)" }}>
           {/* stacked pages behind */}
           <div
             aria-hidden="true"
