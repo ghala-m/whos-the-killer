@@ -78,7 +78,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Case Closed — Classroom Mystery Game" },
+      { title: "Who's the Killer? — Classroom Mystery Game" },
       {
         name: "description",
         content: "A projector-ready classroom murder-mystery game with custom suspects, clues and a dramatic reveal.",
