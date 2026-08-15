@@ -8,13 +8,13 @@ import { PrefToggles } from "@/components/PrefToggles";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Case Closed — Classroom Mystery Game" },
+      { title: "Who's the Killer? — Classroom Mystery Game" },
       {
         name: "description",
         content:
           "Run a dramatic murder-mystery game on your classroom projector. Custom suspects and clues, competing teams, a roulette draw and a big reveal.",
       },
-      { property: "og:title", content: "Case Closed — Classroom Mystery Game" },
+      { property: "og:title", content: "Who's the Killer? — Classroom Mystery Game" },
       {
         property: "og:description",
         content: "Custom suspects, clue-by-clue eliminations, team roulette draw, live accusations and a big reveal.",

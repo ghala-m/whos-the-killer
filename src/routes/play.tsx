@@ -12,13 +12,13 @@ import { useUi } from "@/lib/ui-prefs";
 export const Route = createFileRoute("/play")({
   head: () => ({
     meta: [
-      { title: "Live Investigation — Case Closed" },
+      { title: "Live Investigation — Who's the Killer?" },
       {
         name: "description",
         content:
           "Run the mystery live on the projector: suspect intros, clue reveals, countdown, a roulette draw for team order, live accusations and the culprit reveal.",
       },
-      { property: "og:title", content: "Live Investigation — Case Closed" },
+      { property: "og:title", content: "Live Investigation — Who's the Killer?" },
       {
         property: "og:description",
         content: "Suspect intros, clue reveals, a ticking countdown, a team roulette draw and a celebratory reveal.",

@@ -7,8 +7,9 @@ const LANG_KEY = "case-closed:lang";
 const THEME_KEY = "case-closed:theme";
 
 const en = {
-  brand: "Case Closed",
-  caseNo: "Case File No. 07",
+  brand: "Who's the Killer?",
+  caseNo: "Case File No. 07 — Open",
+
   tagline: "A projector-ready classroom mystery. One screen, one culprit, and a room full of detectives.",
   currentCase: "Current case",
   suspects: "suspects",
@@ -115,8 +116,9 @@ const en = {
 type Dict = Record<keyof typeof en, string>;
 
 const ar: Dict = {
-  brand: "أُغلقت القضية",
-  caseNo: "ملف القضية رقم ٠٧",
+  brand: "مَن القاتل؟",
+  caseNo: "ملف القضية رقم ٠٧ — قضية مفتوحة",
+
   tagline: "لغز جريمة صفّي جاهز للعرض على الشاشة. شاشة واحدة، قاتل واحد، وغرفة مليئة بالمحققين.",
   currentCase: "القضية الحالية",
   suspects: "مشتبهين",

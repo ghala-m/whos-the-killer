@@ -19,13 +19,13 @@ import { PrefToggles } from "@/components/PrefToggles";
 export const Route = createFileRoute("/setup")({
   head: () => ({
     meta: [
-      { title: "Case Setup — Case Closed" },
+      { title: "Case Setup — Who's the Killer?" },
       {
         name: "description",
         content:
           "Build your mystery: choose the victim, add suspects, write clues, pick the culprit and set up the competing teams.",
       },
-      { property: "og:title", content: "Case Setup — Case Closed" },
+      { property: "og:title", content: "Case Setup — Who's the Killer?" },
       {
         property: "og:description",
         content: "Configure victim, suspects, clues, culprit, teams and countdown for your classroom mystery.",
