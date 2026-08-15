@@ -1,6 +1,8 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CaseBoard } from "@/components/CaseBoard";
+
+const NO_MARKS: Set<string> = new Set();
 import { RouletteWheel } from "@/components/RouletteWheel";
 import { PrefToggles } from "@/components/PrefToggles";
 import { caseIssues, loadCase, type CaseFile } from "@/lib/case-model";
@@ -294,7 +296,7 @@ function PlayPage() {
               )}
             </div>
             <div className="mt-8">
-              <CaseBoard suspects={c.suspects} eliminated={eliminated} />
+              <CaseBoard suspects={c.suspects} eliminated={NO_MARKS} />
             </div>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <button className={btn} disabled={clueIndex === 0} onClick={() => setClueIndex((i) => Math.max(0, i - 1))}>
@@ -342,7 +344,7 @@ function PlayPage() {
               {String(Math.floor(remaining / 60)).padStart(2, "0")}:{String(remaining % 60).padStart(2, "0")}
             </p>
             <div className="mt-2">
-              <CaseBoard suspects={c.suspects} eliminated={eliminated} />
+              <CaseBoard suspects={c.suspects} eliminated={NO_MARKS} />
             </div>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <button className={btn} onClick={() => setPaused((p) => !p)}>
@@ -403,7 +405,7 @@ function PlayPage() {
             <div className="mt-6">
               <CaseBoard
                 suspects={c.suspects}
-                eliminated={eliminated}
+                eliminated={NO_MARKS}
                 accused={wrongPicks}
                 onPick={pickSuspect}
                 pickable={!verdict}
